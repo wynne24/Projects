@@ -1,12 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>Learning Tracker</title>
-    <style src="style.css"></style>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <!-- Learning List Input -->
-    <input type="text" placeholder="Add new skill">
-    <button>Add</button>
+    
+
+    <main>
+      <div class="title">
+        <h1>Learning Tracker</h1>
+        <span>Total study time: 4.5 hours</span>
+      </div>
+      
+      <div class="main-container">
+        <form class="container" id="goal-form">
+          <h2>Add a goal</h2>
+
+          <label for="goal-name">Goal name:</label>
+          <input id="goal-name" type="text" placeholder="Learn JavaScript">
+
+          <label for="target-hours">Target hours:</label>
+          <input id="target-hours" type="number" placeholder="20">
+
+          <button type="submit">Add</button>
+        </form>
+        
+        <div class="container">
+          <h2>My goals</h2>
+          <p>JavaScript 4.5 / 20 hours</p>
+          <div class="progress-bar-contianer">
+            <div class="progress-bar"></div>
+          </div>
+        </div>
+
+        <div class="container">
+          <h2>Log a session</h2>
+          <label for="goal">Goal:</label>
+          <select name="goal" id="goal">
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+          </select>
+
+          <label for="goal-duration">Duration:</label>
+          <input type="number" placeholder="20 hours">
+          <button>Add session</button>
+        </div>
+
+        <div class="container">
+          <h2>Recent sessions</h2>
+          <input type="text">
+          <button>Search</button>
+
+          <div>
+            <span>Learn TypeScript</span>
+            <span>Doned!</span>
+            <span>20/05/26</span>
+          </div>
+
+          <div>
+            <span>Practice English</span>
+            <span>Doned!</span>
+            <span>20/05/26</span>
+          </div>
+        </div>
+        
+      </div>
+    </main>
   </body>
 </html>
