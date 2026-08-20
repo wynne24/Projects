@@ -2,70 +2,84 @@
 <html lang="en">
   <head>
     <title>Learning Tracker</title>
+    <i data="lucide"></i>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     
-
     <main>
       <div class="title">
-        <h1>Learning Tracker</h1>
-        <span>Total study time: 4.5 hours</span>
+        <div class="page-name">
+          <h1>Learning Tracker</h1>
+          <i data-lucide="sprout" class="icon"></i>
+        </div>
+        <p><strong>Total study time: </strong>4.5 hours</p>
       </div>
       
       <div class="main-container">
-        <form class="container" id="goal-form">
-          <h2>Add a goal</h2>
+        <div class="element">
+          <form class="container-small" id="goal-form">
+            <h2>Add a goal</h2>
 
-          <label for="goal-name">Goal name:</label>
-          <input id="goal-name" type="text" placeholder="Learn JavaScript">
+            <label for="goal-name">Goal name:</label>
+            <input id="goal-name" type="text" placeholder="Learn JavaScript">
 
-          <label for="target-hours">Target hours:</label>
-          <input id="target-hours" type="number" placeholder="20">
+            <label for="target-hours">Target hours:</label>
+            <input id="target-hours" type="number" placeholder="20">
 
-          <button type="submit">Add</button>
-        </form>
-        
-        <div class="container">
-          <h2>My goals</h2>
-          <p>JavaScript 4.5 / 20 hours</p>
-          <div class="progress-bar-contianer">
-            <div class="progress-bar"></div>
-          </div>
+            <button type="submit">Add</button>
+          </form>
+          
+          <form class="container-small">
+            <h2>Log a session</h2>
+            <label for="goal">Goal:</label>
+            <select name="goal" id="goal">
+              <option value="javascript">JavaScript</option>
+              <option value="typescript">TypeScript</option>
+            </select>
+
+            <label for="goal-duration">Duration:</label>
+            <input type="number" placeholder="20 hours">
+            <button>Add session</button>
+          </form>
         </div>
 
         <div class="container">
-          <h2>Log a session</h2>
-          <label for="goal">Goal:</label>
-          <select name="goal" id="goal">
-            <option value="javascript">JavaScript</option>
-            <option value="typescript">TypeScript</option>
-          </select>
-
-          <label for="goal-duration">Duration:</label>
-          <input type="number" placeholder="20 hours">
-          <button>Add session</button>
+          <h2>My goals</h2>
+          <div class="goal-list">
+            <p class="goal-name"><strong>Learn JavaScript: </strong> 4.5 / 20 hours</p>
+            <div class="progress-bar-contianer">
+              <div class="progress-bar"></div>
+            </div>
+          </div>
         </div>
 
         <div class="container">
           <h2>Recent sessions</h2>
-          <input type="text">
+          <input type="text" class="recent-input">
           <button>Search</button>
 
-          <div>
-            <span>Learn TypeScript</span>
-            <span>Doned!</span>
-            <span>20/05/26</span>
-          </div>
+          <div class="recent-session">
+            <div class="recent-log">
+              <p>May, 20</p>
+              <p><s>Learn TypeScript</s></p>
+            </div>
 
-          <div>
-            <span>Practice English</span>
-            <span>Doned!</span>
-            <span>20/05/26</span>
+            <div class="recent-log">
+              <p>May, 20</p>
+              <p>Practice English</p>
+            </div>
           </div>
         </div>
+
         
       </div>
     </main>
+
+    <!-- Lucide Icons External Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      lucide.createIcons();
+    </script>
   </body>
 </html>
