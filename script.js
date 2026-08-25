@@ -129,10 +129,10 @@ function addSession() {
 
     const sessionHours = timeSelect.value === 'min' ? duration / 60 : duration;
 
-    selectedGoal.studiedHours += sessionHours;
-
-    totalStudied();
+    selectedGoal.studiedHours = Math.min(selectedGoal.studiedHours + sessionHours, selectedGoal.targetHours);
     
+    totalStudied();
+    addRecent();
     save();
     form.reset();
     renderGoal();
@@ -157,12 +157,36 @@ function totalStudied() {
     `;
 }
 
+function addRecent() {
+  const today = dayjs().format('MMM, D');
+
+  let recent = '';
+
+  appData.goals.forEach((goal) => {
+
+    if (goal.studiedHours === goal.targetHours) {
+      recent += `
+        <div class="recent-log">
+          <button class="delete-btn"><i data-lucide="x"></i></button>
+          <p>${today}</p>
+          <p><s>${goal.name}</s></p>
+        </div>
+      `;
+    }
+  });
+
+  document.querySelector('.recent-session')
+    .innerHTML = recent;
+
+  lucide.createIcons();
+}
+
 // Opertation Code ---------------------------------------------
 
 totalStudied();
 addGoal();
 addSession();
 saveSelectedOptions();
-
+addRecent();
 renderGoal();
 
