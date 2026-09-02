@@ -1,192 +1,271 @@
-// Data ---------------------------------------------
-
-const appData = JSON.parse(localStorage.getItem('webData')) || 
+// Data
+const userData = JSON.parse(localStorage.getItem("userData")) || [
   {
-    goals: [],
-    previousSelect: {
-      goal: '',
-      time: ''
-    }
-  };
+    data: [],
+    sessionInput: [],
+    recentData: [],
+  },
+];
+// Variable
+const { data, recentData } = userData[0];
+const recentSession = document.querySelector(".recent-session");
+const searchInput = document.querySelector('.search-input');
 
-// functions ---------------------------------------------
-
+// Small functions
 function save() {
-  localStorage.setItem('webData', JSON.stringify(appData))
+  localStorage.setItem("userData", JSON.stringify(userData));
+}
+
+function numFormat(number) {
+  return number.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
 
 function inputError(input) {
-  if (input.value.trim() === '') {
-    input.focus();
-    input.classList.add('input-error');
+  input.classList.add("input-error");
+  input.focus();
 
-    setTimeout(() => {
-      input.classList.remove('input-error');
-    }, 1000);
-
-    return true;
-  }
-  return false;
+  setTimeout(() => {
+    input.classList.remove("input-error");
+  }, 1500);
 }
 
-function saveSelectedOptions() {
-  const goalSelect = document.querySelector('.added-session-js');
-  const timeSelect = document.querySelector('.time');
+function saveInput() {
+  const goalInput = document.querySelector(".js-session-name");
+  const timeInput = document.querySelector(".time");
 
-  goalSelect.addEventListener('change', () => {
-    appData.previousSelect.goal = goalSelect.value;
-    save();
-  });
-
-  timeSelect.addEventListener('change', () => {
-    appData.previousSelect.time = timeSelect.value;
-    save();
-  });
-}
-
-function renderGoal() {
-  let goalList = '';
-  let selectList = '';
-
-  appData.goals.forEach((goal) => {
-    const percent = Math.min((goal.studiedHours / goal.targetHours) * 100, 100);
-
-    goalList += `
-      <p class="goal-name">
-        <strong>${goal.name}: </strong>
-        ${goal.studiedHours.toFixed(2)} / ${goal.targetHours} hrs</p>
-      <div class="progress-bar-contianer">
-        <div class="progress-bar" style="width:${percent}%"></div>
-      </div>
-    `;
-    selectList += `
-      <option value="${goal.name}">${goal.name}</option>
-    `;
-  });
-  
-  document.querySelector('.goal-list')
-    .innerHTML = goalList;
-
-  document.querySelector('.added-session-js')
-    .innerHTML = selectList;
-
-  const goalSelect = document.querySelector(".added-session-js");
-  const timeSelect = document.querySelector(".time");
-
-  goalSelect.value = appData.previousSelect.goal;
-  timeSelect.value = appData.previousSelect.time;
-}
-
-// Main Functions ---------------------------------------------
-
-function addGoal() {
-  const goalName = document.querySelector('#goal-name');
-  const targetHours = document.querySelector('#target-hours');
-
-  const form = document.querySelector('#goal-form');
-  
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    if (inputError(goalName)) {
-      return;
-    }
-    if (inputError(targetHours)) {
-      return;
+  function saveSelectedValue() {
+    userData[0].sessionInput[0] = {
+      goalOption: goalInput.value,
+      timeOption: timeInput.value,
     };
 
-    appData.goals.push({
+    save();
+  }
+
+  goalInput.addEventListener("change", saveSelectedValue);
+  timeInput.addEventListener("change", saveSelectedValue);
+}
+
+function loadInput() {
+  const savedInput = userData[0].sessionInput[0];
+
+  if (!savedInput) return;
+
+  document.querySelector(".js-session-name").value = savedInput.goalOption;
+  document.querySelector(".time").value = savedInput.timeOption;
+}
+
+// Functions
+function addGoal() {
+  const goalName = document.querySelector("#goal-name");
+  const targetHours = document.querySelector("#target-hours");
+
+  if (goalName.value === "") {
+    inputError(goalName);
+  } else if (targetHours.value === "") {
+    inputError(targetHours);
+  } else {
+    const goalData = {
       name: goalName.value,
-      targetHours: Number(targetHours.value),
-      studiedHours: 0
-    });
+      targetH: Number(targetHours.value),
+      learned: 0,
+      startDate: dayjs().format("DD MMM"),
+    };
 
-    save();
-    form.reset();
-    renderGoal();
-  });
+    userData[0].data.push(goalData);
+  }
 }
 
+function addGoalProgress() {
+  const duration = document.querySelector(".js-duration-input");
+  const sessionName = document.querySelector(".js-session-name");
+  const timeOption = document.querySelector(".time");
 
-function addSession() {
-  const form = document.querySelector('#session-form');
-  const goalSelect = document.querySelector('.added-session-js');
-  const durationInput = document.querySelector('.duration-input-js');
-  const timeSelect = document.querySelector('.time');
-  
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
+  if (sessionName.value === "") {
+    inputError(sessionName);
+  } else if (duration.value === "") {
+    inputError(duration);
+  } else {
+    data.forEach((goalList) => {
+      let time = Number(duration.value);
 
-    if (inputError(durationInput)) {
-      return;
+      if (goalList.name === sessionName.value) {
+        if (timeOption.value === "min") {
+          time = time / 60;
+        }
+        goalList.learned += Number(time);
+      }
+    });
+  }
+}
+
+// Generate HTML Functions
+function goalHTML() {
+  let goalListHTML = "",
+    sessionListHTML = "";
+
+  data.forEach((goalList) => {
+    const { name, targetH, learned } = goalList;
+    const percent = (learned / targetH) * 100;
+
+    if (percent >= 100) {
+      goalListHTML = "";
     }
-
-    const selectedGoal = appData.goals.find((goal) => {
-      return goal.name === goalSelect.value;
-    });
-
-    const duration = Number(durationInput.value);
-
-    const sessionHours = timeSelect.value === 'min' ? duration / 60 : duration;
-
-    selectedGoal.studiedHours = Math.min(selectedGoal.studiedHours + sessionHours, selectedGoal.targetHours);
-    
-    totalStudied();
-    addRecent();
-    save();
-    form.reset();
-    renderGoal();
-  });
-}
-
-function totalStudied() {
-  let total = 0;
-
-  appData.goals.forEach((goal) => {
-    total += goal.studiedHours;
-  });
-
-  document.querySelector('.total-study')
-    .innerHTML = `
-      <p>
-        <strong>
-          Total study time: 
-        </strong>
-        ${total.toFixed(2)} hours
-      </p>
+    goalListHTML += `
+      <p class="goal-name"><strong>${name}: </strong> ${numFormat(learned)} / ${targetH} hours</p>
+      <div class="progress-bar-contianer">
+        <div class="progress-bar" style="width: ${percent}%"></div>
+      </div>
     `;
+
+    sessionListHTML += `
+      <option value="${name.trim()}">${name}</option>
+    `;
+  });
+
+  document.querySelector(".goal-list").innerHTML = goalListHTML;
+  document.querySelector(".js-session-name").innerHTML = sessionListHTML;
+  lucide.createIcons();
 }
 
-function addRecent() {
-  const today = dayjs().format('MMM, D');
+function totalHTML() {
+  const totalStudyTime = document.querySelector(".total-study");
+  let totalStudied = 0;
 
-  let recent = '';
+  recentData.forEach((goalList) => {
+    totalStudied += goalList.learned;
+  });
+  data.forEach((goalList) => {
+    totalStudied += goalList.learned;
+  });
 
-  appData.goals.forEach((goal) => {
+  totalStudyTime.innerHTML = `
+    <p>
+      <strong>
+        Total study time: 
+      </strong>
+      ${numFormat(totalStudied)} hours
+    </p>
+  `;
+}
 
-    if (goal.studiedHours === goal.targetHours) {
-      recent += `
-        <div class="recent-log">
-          <button class="delete-btn"><i data-lucide="x"></i></button>
-          <p>${today}</p>
-          <p><s>${goal.name}</s></p>
-        </div>
-      `;
+function learnedHTML(data) {
+  let learned = '';
+
+  data.forEach((list) => {
+    const { name, targetH, startDate } = list;
+
+    learned += `
+      <div class="recent-log">
+        <button class="delete-btn"><i data-lucide="x"></i></button>
+        <p>${name}</p>
+        <p>${targetH} hours 🤯</p>
+        <p>${startDate} - ${dayjs().format("DD MMM")}</p>
+      </div>
+    `;
+  });
+  return learned;
+}
+
+function addRecentHTML() {
+  data.forEach((goalList, index) => {
+    if (goalList.learned >= goalList.targetH) {
+      userData[0].recentData.push(goalList);
+      data.splice(index, 1);
     }
   });
 
-  document.querySelector('.recent-session')
-    .innerHTML = recent;
+  recentSession.innerHTML = learnedHTML(recentData);
+
+  document.querySelectorAll('.delete-btn').forEach((delBtn, index) => {
+    delBtn.addEventListener('click', () => {
+      recentData.splice(index, 1);
+      addRecentHTML();
+      save();
+      lucide.createIcons();
+    });
+  });
+  
+  lucide.createIcons();
+}
+
+function loadSearch() {
+  const input = document.querySelector('.search-input').value;
+  const value = input.trim().toLowerCase();
+
+  if (input === '') return;
+
+  const searchedItems = recentData.filter((data) => {
+    return data.name.toLowerCase().includes(value);
+  });
+
+  recentSession.innerHTML = learnedHTML(searchedItems);
+
+  document.querySelectorAll('.delete-btn').forEach((delBtn, index) => {
+    delBtn.addEventListener('click', () => {
+      const itemToDelete = searchedItems[index];
+      const recentIndex = recentData.indexOf(itemToDelete);
+
+      recentData.splice(recentIndex, 1);
+      
+      save();
+      loadSearch();
+      lucide.createIcons();
+    });
+  });
 
   lucide.createIcons();
 }
 
-// Opertation Code ---------------------------------------------
+// Event Listeners
+const addGoalForm = document.querySelector("#goal-form");
+addGoalForm.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-totalStudied();
-addGoal();
-addSession();
-saveSelectedOptions();
-addRecent();
-renderGoal();
+  addGoal();
+  goalHTML();
+  save();
+  addGoalForm.reset();
+  loadInput();
+});
+
+const logSessionForm = document.querySelector("#session-form");
+logSessionForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  addGoalProgress();
+  totalHTML();
+  addRecentHTML();
+  goalHTML();
+  save();
+  logSessionForm.reset();
+  loadInput();
+});
+
+const searchBtn = document.querySelector('.search-btn');
+searchBtn.addEventListener('click', () => {
+  loadSearch();
+});
+searchInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    loadSearch();
+  }
+});
+
+const delSearchValue = document.querySelector('.del-search');
+delSearchValue.addEventListener('click', () => {
+
+  searchInput.value = '';
+  searchInput.focus();
+
+  addRecentHTML();
+})
+
+//Load Page Data
+totalHTML();
+addRecentHTML();
+goalHTML();
+saveInput();
+loadInput();
+lucide.createIcons();
 

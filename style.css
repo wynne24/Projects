@@ -174,18 +174,19 @@ main {
 }
 .recent-log {
   display: grid;
-  grid-template-columns: 40px 75px 1fr;
+  grid-template-columns: 30px 1fr 1fr 130px;
   align-items: center;
 }
+
 .container .delete-btn {
   background: transparent;
   box-shadow: none;
-  margin: 0px;
+  margin: 0px 0px 0px 5px;
   padding: 0px;
   svg.lucide {
     margin-top: 4px;
     color: rgb(168, 0, 0);
-  }
+  };
 }
 .container .delete-btn:hover {
   background: transparent;
@@ -193,14 +194,61 @@ main {
 .recent-log p {
   font-size: 16px;
   padding: 0px;
-  margin: 0px;
+  margin: 0px 0px 0px 5px;
   overflow-wrap: anywhere;
 }
-.search-bar {
+.search {
   display: flex;
   align-items: center;
+  gap: 20px;
 }
-.search-bar button {
-  margin: 0px;
+.search button {
+  margin: 11px 10px 0px 0px;
   padding: 7px 10px;
+}
+.search-bar {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  margin-left: 10px;
+}
+.search .search-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 11px 0 0 0px;
+  padding-right: 30px;
+}
+.search-bar .del-search {
+  position: absolute;
+  top: 12.5px;
+  right: 2px;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  box-shadow: none;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  padding: 0px;
+  margin: 0px;
+
+  svg.lucide {
+    height: 15px;
+    color: var(--input-c);
+  };
+}
+.search-bar .del-search:hover {
+  background: transparent;
+  transform: none;
+}
+.search-bar .del-search:active {
+  opacity: 0;
+}
+.search-bar:focus-within 
+.del-search {
+  display: flex;
 }
